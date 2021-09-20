@@ -15,10 +15,10 @@ const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
 const span = document.getElementsByClassName("close")[0];
 
-// launch modal event
+// Launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 
-// launch modal form
+// Launch modal form
 function launchModal() {
   modalbg.style.display = "block";
 }
@@ -35,4 +35,9 @@ window.onclick = function(event) {
   }
 }
 
-
+// API validation of each form-data
+//document.querySelector('.form input[type="button"]').addEventListener("click", function() {
+  //for (let input of document.querySelectorAll(".form input, .form textarea")) {
+  //  input.setCustomValidity(adaptmessage) => fo;
+  //}
+//})

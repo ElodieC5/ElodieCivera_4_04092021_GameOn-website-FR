@@ -10,19 +10,21 @@ function editNav() {
   }
 }
 
-// DOM Elements
+// DOM Elements & RegEx
 // -----------------------------------------------------
 // modalbg: bckg form, modalBtn: btn to launch, formData: inputs, span: (x) to close
 
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
-const formData = document.querySelectorAll(".formData");
+const formDatas = document.querySelectorAll(".formData");
 const close = document.querySelector(".close");
 const userInputs = document.querySelectorAll("input");
+const locationEls = document.querySelectorAll("input[name='location']");
 const submit = document.querySelector(".btn-submit");
-const prenom = document.getElementById("first");
-const regEmail =/^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$/
-
+const regEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const regDate = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/;
+const regNumber = /^[0-9]\d*$/;
+let participation;
 
 
 // MODAL launch & close
@@ -44,9 +46,16 @@ function closeModal() {
 
 submit.addEventListener("click", checkInput);
 
+
+/* let birth = document.getElementById("birthdate");
+
+birth.addEventListener("click", checkAge); */
+
+
 function setErrorMessage(input, message) {
   input.parentElement.setAttribute("data-error", message);
   input.parentElement.setAttribute("data-error-visible", "true");
+  input.parentElement.classList.add('erreur');
   
 }
 
@@ -80,88 +89,162 @@ function checkInput(e) {
     }
     break;
   case "email" :
-    if (!inputValue.match(regEmail)) {
+    if (!regEmail.test(inputValue)) {
       setErrorMessage(input, "Veuillez vérifier votre adresse e-mail");
     } else {
         setSuccessMessage(input);
     }
     break;
   case "birthdate" :
-    if ( inputValue.length ) {
-      // console.log(birthdate);
+    if (!regDate.test(inputValue)) {
+      setErrorMessage(input, "Veuillez vérifier votre date de naissance");
     } else {
-          // console.log(birthdate +"else");
+        setSuccessMessage(input);
     }
     break;
-  case "quantity" :
-    if ( inputValue.length ) {
-      // console.log(quantity);
+/*       function checkAge(value) {
+        let now = new Date();
+        let birthDate = new Date(value);
+        let nowYear = now.getFullYear();
+        let birthYear = birthDate.getFullYear();
+        let minYear = nowYear - 10;
+        let maxYear = nowYear - 110;
+    
+        if (birthYear > minYear || birthYear < maxYear) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    if (checkAge(inputValue) === false) {
+      setErrorMessage(input, "L'âge minimun pour pouvoir participer est de 10 ans");
     } else {
-          // console.log(quantity +"else");
+        setSuccessMessage(input);
+    } */
+    break;
+  case "quantity" :
+    let a = Number(inputValue);
+    participation = a;
+    if (!regNumber.test(a) || Number(a) > 99) {
+      setErrorMessage(input, "Merci de vérifier le nombre de vos précédentes participations");
+    } else {
+        setSuccessMessage(input);
     }
     break;
   case "location" :
-    if ( inputValue.length ) {
-      // console.log(location);
+    let checkboxChecked = 0;
+
+    locationEls.forEach(locationEl => {
+      if (locationEl.checked) {
+        checkboxChecked++;
+      }
+    });
+
+    if (checkboxChecked > 0 && participation > 0) {
+      setSuccessMessage(input);
+    } else if (checkboxChecked === 0 && participation === 0) {
+      setSuccessMessage(input);
     } else {
-          // console.log(location +"else");
+          setErrorMessage(input, "Merci d'indiquer dans quelle ville vous avez participé");
     }
     break;
+
+    case "cgu" :
+      if (input.checked) {
+        setSuccessMessage(input);
+      } else {
+        setErrorMessage(input, "Merci d'accepter nos CGU");
+      }
     }
+
+
   });
+ let ilYaUneErreur = 0;
+  formDatas.forEach(formData => {
+    if (formData.classList.contains("erreur")) {
+      ilYaUneErreur++;
+    }
+  })
+  if(ilYaUneErreur === 0){
+    alert('votre formulaire a bien été');
+    closeModal();
+  }
+
 }
 
+//     locationEls.forEach(function isChecked(locationEl) {
+//       if (locationEl.checked) {
+//         checkboxChecked++;
+//       };
+// });
+
+
+// locationEls.forEach(function (locationEl){
+//   if (locationEl.checked) {
+//     checkboxChecked++;
+//   }
+// });
+
+
+// //() => {} // fonction flecher && arrow function
+// locationEls.forEach((locationEl) => {
+//   if (locationEl.checked) {
+//     checkboxChecked++;
+//   }
+// });
+
+// quand il y a un seul param pas besoin de parenthe ()
+// locationEls.forEach(locationEl => {
+//   if (locationEl.checked) {
+//     checkboxChecked++;
+//   }
+// });
+
+// divEls.forEach(divEl => divEl.addEventListener('click', () => console.log("coucou")));
 
 
 
+//     // let checkboxChecked = 0;
+
+//     // for (let i = 0; i < locationEls.length; i++) {
+//     //   if (locationEls[i].checked) {
+//     //     checkboxChecked++;
+//     //   }
+//     // }
+   
+
+
+// let divEls = document.querySelectorAll('div');
+
+
+// divEls.forEach(divEl => {
+//   divEl.addEventListener('click', () => {
+//     console.log("coucou");
+// })
+// });
+
+
+// // lorsque il y a une instruction pas besoin d'accolade
+// divEls.forEach(divEl => divEl.addEventListener('click', () => console.log("coucou")));
 
 
 
+// addEventListener('keyup', function(){
 
-
-
-
-
-
-
-
-
-
-
-
-// formData.forEach(div => {
-//   div.setAttribute("data-error", "vous avez une erreur");
-//   div.setAttribute("data-error-visible", "true");
-// }) 
-
-// let email = document.getElementById("email");
-// email.parentElement.setAttribute("data-error", "vous avez une erreur");
-// email.parentElement.setAttribute("data-error-visible", "true");
-
-
-
-
-// formData.forEach((div) =>
-// // formData.forEach((div) => div.set
-// // console.log(formData[3]);
-
-
-
-// formData.forEach(function(div){
-//   // console.log(div);
 // })
 
-// formData.forEach((div) => {
-//   // console.log(div);
-
+// dEventListener('keyup', () =>{
+  
 // })
 
-// formData.forEach(div => {
-//   div.setAttribute("data-error", "");
-//   div.setAttribute("data-error-visible", "true");
-// }) 
+// dEventListener('keyup', isCheked)
 
 
-// formData.forEach(div => console.log(div));
 
 
+
+// let bonjour = true;
+
+
+// if (bonjour) console.log('il ma dit bonjour');
+// else console.log('il ma pas dit bonjour');

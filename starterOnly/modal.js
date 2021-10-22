@@ -1,5 +1,6 @@
-// NAV Responsive with icon for screen & max-width 768px
+// NAV Responsive = Icon (screen & max-width 768px) vs Menu
 // -----------------------------------------------------
+// when click on the icon => add "responsive" as a class => menu appears
 
 function editNav() {
   var x = document.getElementById("myTopnav");
@@ -12,82 +13,95 @@ function editNav() {
 
 // DOM Elements & RegEx
 // -----------------------------------------------------
-// modalbg: bckg form, modalBtn: btn to launch, formData: inputs, span: (x) to close
+// modalbg: modal bckg, modalBtn: 2 btn to launch
+// formData: div with inputs, span: (x) to close
 
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
-const formDatas = document.querySelectorAll(".formData");
+const formDataList = document.querySelectorAll(".formData");
 const close = document.querySelector(".close");
 const userInputs = document.querySelectorAll("input");
-const locationEls = document.querySelectorAll("input[name='location']");
+const locationElts = document.querySelectorAll("input[name='location']");
 const submit = document.querySelector(".btn-submit");
-const regEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const regEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
 const regDate = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/;
-const regNumber = /^[0-9]\d*$/;
+const regNumber = /^\d+$/;
 let participation;
 
 
-// MODAL launch & close
+// MODAL Launch & Close
 // -----------------------------------------------------
-
-modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
-close.addEventListener("click", closeModal);
 
 function launchModal() {
   modalbg.style.display = "block";
 }
 
+modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
+
 function closeModal() {
   modalbg.style.display = "none";
+  document.querySelector("form").reset();
 }
+
+close.addEventListener("click", closeModal);
+
 
 // FORM validation
 // -----------------------------------------------------
+// when form is sumitted, each user's input is checked & customized error message eventually pop-up
 
 submit.addEventListener("click", checkInput);
 
-
-/* let birth = document.getElementById("birthdate");
-
-birth.addEventListener("click", checkAge); */
-
+// value of the "data-error" attribute is the error message, the error class prevents the final validation
 
 function setErrorMessage(input, message) {
   input.parentElement.setAttribute("data-error", message);
   input.parentElement.setAttribute("data-error-visible", "true");
-  input.parentElement.classList.add('erreur');
+  input.parentElement.classList.add("error");
   
 }
+
+// no message when everything is fine, remove the "error" class in case it has been corrected afterwards
 
 function setSuccessMessage(input) {
   input.parentElement.removeAttribute("data-error");
   input.parentElement.removeAttribute("data-error-visible");
+  input.parentElement.classList.remove("error");
   
 }
 
+// prevent submitting while inputs are validated
+
 function checkInput(e) {
   e.preventDefault();
+
+// each input is switched as per its name and then its value is checked
 
   userInputs.forEach(input => {
     let inputName = input.name;
     let inputValue = input.value;
   
+// if value does not match validation requirement then call function setErrorMessage
+// else call setSuccessMessage
+
     switch (inputName) {
 
   case "first" :
     if (inputValue.length < 2) {
-      setErrorMessage(input, "Veuillez entrer au moins 2 caractères pour votre prénom.");
+      setErrorMessage(input, "Veuillez entrer au moins 2 caractères");
     } else {
         setSuccessMessage(input);
     }
     break;
+
   case "last" :
     if (inputValue.length < 2) {
-      setErrorMessage(input, "Veuillez entrer au moins 2 caractères pour votre nom.");
+      setErrorMessage(input, "Veuillez entrer au moins 2 caractères");
     } else {
         setSuccessMessage(input);
     }
     break;
+
   case "email" :
     if (!regEmail.test(inputValue)) {
       setErrorMessage(input, "Veuillez vérifier votre adresse e-mail");
@@ -95,6 +109,7 @@ function checkInput(e) {
         setSuccessMessage(input);
     }
     break;
+
   case "birthdate" :
     if (!regDate.test(inputValue)) {
       setErrorMessage(input, "Veuillez vérifier votre date de naissance");
@@ -102,40 +117,21 @@ function checkInput(e) {
         setSuccessMessage(input);
     }
     break;
-/*       function checkAge(value) {
-        let now = new Date();
-        let birthDate = new Date(value);
-        let nowYear = now.getFullYear();
-        let birthYear = birthDate.getFullYear();
-        let minYear = nowYear - 10;
-        let maxYear = nowYear - 110;
-    
-        if (birthYear > minYear || birthYear < maxYear) {
-          return false;
-        } else {
-          return true;
-        }
-      }
-    if (checkAge(inputValue) === false) {
-      setErrorMessage(input, "L'âge minimun pour pouvoir participer est de 10 ans");
-    } else {
-        setSuccessMessage(input);
-    } */
-    break;
+
   case "quantity" :
     let a = Number(inputValue);
     participation = a;
-    if (!regNumber.test(a) || Number(a) > 99) {
-      setErrorMessage(input, "Merci de vérifier le nombre de vos précédentes participations");
+    if (!regNumber.test(a) || Number(a) > 99 || inputValue ==="") {
+      setErrorMessage(input, "Combien de fois avez-vous participé ?");
     } else {
         setSuccessMessage(input);
     }
     break;
+
   case "location" :
     let checkboxChecked = 0;
-
-    locationEls.forEach(locationEl => {
-      if (locationEl.checked) {
+    locationElts.forEach(locationElt => {
+      if (locationElt.checked) {
         checkboxChecked++;
       }
     });
@@ -144,8 +140,10 @@ function checkInput(e) {
       setSuccessMessage(input);
     } else if (checkboxChecked === 0 && participation === 0) {
       setSuccessMessage(input);
+    } else if (checkboxChecked > 0 && participation === 0) {
+      setErrorMessage(input, "Si c'est votre 1ère participation, ne cochez rien");
     } else {
-          setErrorMessage(input, "Merci d'indiquer dans quelle ville vous avez participé");
+          setErrorMessage(input, "Veuillez préciser dans quelle ville");
     }
     break;
 
@@ -153,98 +151,22 @@ function checkInput(e) {
       if (input.checked) {
         setSuccessMessage(input);
       } else {
-        setErrorMessage(input, "Merci d'accepter nos CGU");
+        setErrorMessage(input, "Veuillez accepter nos conditions d'utilisation");
       }
     }
-
-
   });
- let ilYaUneErreur = 0;
-  formDatas.forEach(formData => {
-    if (formData.classList.contains("erreur")) {
+
+// final loop checking no uncorrected error remaining and form validation
+
+let ilYaUneErreur = 0;
+  formDataList.forEach(formData => {
+    if (formData.classList.contains("error")) {
       ilYaUneErreur++;
     }
-  })
-  if(ilYaUneErreur === 0){
-    alert('votre formulaire a bien été');
-    closeModal();
-  }
+  });
 
+if (ilYaUneErreur === 0) {
+  alert ("Votre formulaire a bien été enregistré. Vous recevrez un e-mail de confirmation sous 24 heures. Merci !");
+  closeModal(); 
 }
-
-//     locationEls.forEach(function isChecked(locationEl) {
-//       if (locationEl.checked) {
-//         checkboxChecked++;
-//       };
-// });
-
-
-// locationEls.forEach(function (locationEl){
-//   if (locationEl.checked) {
-//     checkboxChecked++;
-//   }
-// });
-
-
-// //() => {} // fonction flecher && arrow function
-// locationEls.forEach((locationEl) => {
-//   if (locationEl.checked) {
-//     checkboxChecked++;
-//   }
-// });
-
-// quand il y a un seul param pas besoin de parenthe ()
-// locationEls.forEach(locationEl => {
-//   if (locationEl.checked) {
-//     checkboxChecked++;
-//   }
-// });
-
-// divEls.forEach(divEl => divEl.addEventListener('click', () => console.log("coucou")));
-
-
-
-//     // let checkboxChecked = 0;
-
-//     // for (let i = 0; i < locationEls.length; i++) {
-//     //   if (locationEls[i].checked) {
-//     //     checkboxChecked++;
-//     //   }
-//     // }
-   
-
-
-// let divEls = document.querySelectorAll('div');
-
-
-// divEls.forEach(divEl => {
-//   divEl.addEventListener('click', () => {
-//     console.log("coucou");
-// })
-// });
-
-
-// // lorsque il y a une instruction pas besoin d'accolade
-// divEls.forEach(divEl => divEl.addEventListener('click', () => console.log("coucou")));
-
-
-
-// addEventListener('keyup', function(){
-
-// })
-
-// dEventListener('keyup', () =>{
-  
-// })
-
-// dEventListener('keyup', isCheked)
-
-
-
-
-
-// let bonjour = true;
-
-
-// if (bonjour) console.log('il ma dit bonjour');
-// else console.log('il ma pas dit bonjour');
+  }

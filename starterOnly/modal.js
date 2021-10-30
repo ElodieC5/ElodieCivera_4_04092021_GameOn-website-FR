@@ -23,6 +23,8 @@ const close = document.querySelector(".close");
 const userInputs = document.querySelectorAll("input");
 const locationElts = document.querySelectorAll("input[name='location']");
 const submit = document.querySelector(".btn-submit");
+
+const regChar = /^[A-Za-z]{2,25}$/;
 const regEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
 const regDate = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/;
 const regNumber = /^\d+$/;
@@ -48,9 +50,11 @@ close.addEventListener("click", closeModal);
 
 // FORM validation
 // -----------------------------------------------------
-// when form is sumitted, each user's input is checked & customized error message eventually pop-up
+// when form is sumitted (or while inputs are filled in), each user's input is checked & customized error message eventually pop-up
 
 submit.addEventListener("click", checkInput);
+
+userInputs.forEach(input => input.addEventListener('keyup', checkInput));
 
 // value of the "data-error" attribute is the error message, the error class prevents the final validation
 
@@ -58,7 +62,6 @@ function setErrorMessage(input, message) {
   input.parentElement.setAttribute("data-error", message);
   input.parentElement.setAttribute("data-error-visible", "true");
   input.parentElement.classList.add("error");
-  
 }
 
 // no message when everything is fine, remove the "error" class in case it has been corrected afterwards
@@ -66,8 +69,7 @@ function setErrorMessage(input, message) {
 function setSuccessMessage(input) {
   input.parentElement.removeAttribute("data-error");
   input.parentElement.removeAttribute("data-error-visible");
-  input.parentElement.classList.remove("error");
-  
+  input.parentElement.classList.remove("error"); 
 }
 
 // prevent submitting while inputs are validated
@@ -87,16 +89,16 @@ function checkInput(e) {
     switch (inputName) {
 
   case "first" :
-    if (inputValue.length < 2) {
-      setErrorMessage(input, "Veuillez entrer au moins 2 caractères");
+    if (!regChar.test(inputValue)) {
+      setErrorMessage(input, "Veuillez entrer au moins 2 lettres");
     } else {
         setSuccessMessage(input);
     }
     break;
 
   case "last" :
-    if (inputValue.length < 2) {
-      setErrorMessage(input, "Veuillez entrer au moins 2 caractères");
+    if (!regChar.test(inputValue)) {
+      setErrorMessage(input, "Veuillez entrer au moins 2 lettres");
     } else {
         setSuccessMessage(input);
     }
@@ -156,7 +158,7 @@ function checkInput(e) {
     }
   });
 
-// final loop checking no uncorrected error remaining and form validation
+// final loop checking no uncorrected error remaining and final form validation
 
 let ilYaUneErreur = 0;
   formDataList.forEach(formData => {
@@ -166,7 +168,21 @@ let ilYaUneErreur = 0;
   });
 
 if (ilYaUneErreur === 0) {
-  alert ("Votre formulaire a bien été enregistré. Vous recevrez un e-mail de confirmation sous 24 heures. Merci !");
-  closeModal(); 
+
+  const validation = document.querySelector(".content");
+  const finalMessage = document.createElement("div");
+  const finalButton = document.createElement("button");
+
+  validation.classList.add("final");
+  finalMessage.textContent = 'Votre inscription est bien enregistrée. Merci et à bientôt pour le "GameOn" !';
+  finalButton.textContent="Fermer";
+  finalButton.classList.add("btn-signup");
+
+  validation.appendChild(finalMessage);
+  validation.appendChild(finalButton);
+
+  finalButton.addEventListener("click", closeModal);
+
+  };
 }
-  }
+  

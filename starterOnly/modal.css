@@ -95,6 +95,9 @@ img {
 }
 
 @media screen and (max-width: 540px) {
+	.topnav {
+		padding: 2vw;
+	}
 	.topnav a {
 		display: none;
 	}
@@ -192,6 +195,25 @@ main {
 	position: relative;
 	color: #fff;
 	padding-top: 10px;
+}
+
+.final {
+	min-height: 750px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.final form {
+	display: none;
+}
+
+.final div {
+	padding: 15px 15%;
+	font-size: 1.3rem;
+	font-weight: normal;
+	text-align: center;
 }
 
 .modal-body {
